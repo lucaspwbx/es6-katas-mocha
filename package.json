@@ -1,0 +1,18 @@
+{
+  "name": "es6",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "mocha-traceur": "^2.1.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "mocha --compilers js:mocha-traceur"
+  },
+  "author": "",
+  "license": "ISC"
+}
