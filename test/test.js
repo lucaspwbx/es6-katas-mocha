@@ -27,16 +27,92 @@ describe('class creation', () => {
 
     assert.equal(notATester.writesTests(), false);
   });
+});
 
-  it('multiple methods need no comas', () => {
-    class User {
-      wroteATest() { this.everWroteATest = true; }
-      isLazy() {  }
+describe('class accessors', () => {
+  it('only a getter is defined like a method prefixed with get', () => {
+    class MyAccount {
+      get balance() { return Infinity; }
     }
 
-    const tester = new User();
-    assert.equal(tester.isLazy(), true)
-    tester.wroteATest();
-    assert.equal(tester.isLazy(), false)
+    assert.equal(new MyAccount().balance, Infinity);
+  });
+
+  it('a setter has the prefix set', () => {
+    class MyAccount {
+      get balance() { return this.amount; }
+      set balance(amount) { this.amount = amount; }
+    }
+    const account = new MyAccount();
+    account.balance = 42;
+
+    assert.equal(account.balance, 42);
+  });
+});
+
+describe('dynamic accessors', () => {
+  it('a dynamic getter name is enclosed in [ and ]', () => {
+    const balance = 'yourMoney';
+    class YourAccount {
+      get [balance]() { return -Infinity; }
+    }
+
+    assert.equal(new YourAccount().yourMoney, -Infinity);
+  });
+
+  it('a dynamic setter is enclosed in [ and ]', () => {
+    const propertyName = 'balance';
+    class MyAccount {
+      get [propertyName]() { return this.amount; }
+      set [propertyName](amount) { this.amount = 23; }
+    }
+
+    const account = new MyAccount();
+    account.balance = 42;
+    assert.equal(account.balance, 23);
+  });
+});
+
+describe('static keyword', () => {
+  class IntegrationTest {}
+  class UnitTest {}
+
+  describe('for methods', () => {
+    it('a static method just has the prefix static', () => {
+      class TestFactory {
+        static makeTest() { return new UnitTest(); }
+      }
+
+      assert.ok(TestFactory.makeTest() instanceof UnitTest);
+    });
+
+    it('the method name can be dynamic computed at runtime', () => {
+      const methodName = 'createTest';
+      class TestFactory {
+        static [methodName]() { return new UnitTest(); }
+      }
+
+      assert.ok(TestFactory.createTest() instanceof UnitTest);
+    });
+  });
+
+  describe('for accessors', () => {
+    it('a getter name can be static, just prefix it with static', () => {
+      class UnitTest {
+        static get testType() { return 'unit'; }
+      }
+
+      assert.equal(UnitTest.testType, 'unit');
+    });
+
+    it('even a static getter name can be dynamic', () => {
+      const type = 'test' + 'Type';
+      class IntegrationTest {
+        static get [type]() { return 'integration'; }
+      }
+
+      assert.ok('testType' in IntegrationTest);
+      assert.equal(IntegrationTest.testType, 'integration');
+    });
   });
 });
